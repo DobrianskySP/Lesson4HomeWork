@@ -1,24 +1,74 @@
 public class MyThread extends Thread {
-    String[] printPosition = new String[]{"a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z"};
-    String theWord;
+    char letter = 'a';
 
-    public MyThread(String theWord) {
-        this.theWord = theWord;
+
+    public MyThread(String name) {
+        System.out.println("Поток с именем " + name);
         start();
     }
 
     @Override
     public void run() {
-        printLetter(theWord);
+        Object mon = new Object();
+        printLetterA(mon);
+        printLetterB(mon);
+        printLetterC(mon);
     }
 
-    public synchronized void printLetter(String letter) {
-        for (int i = 0; i < 3; i++) {
-            System.out.println(letter);
-            try {
-                Thread.sleep(500);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+    public void printLetterA(Object mon) {
+        System.out.println("Запущен поток печати буквы а");
+        synchronized (mon) {
+            for (int i = 0; i < 5; i++) {
+                while (letter != 'a') {
+                    try {
+                        System.out.println("Вызван метод wait  в потоке а");
+                        mon.wait();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+                    System.out.println(letter);
+                    letter = 'b';
+                    mon.notify();
+            }
+            System.out.println("+");
+        }
+    }
+
+    public void printLetterB(Object mon) {
+        System.out.println("Запущен поток печати буквы b");
+        synchronized (mon) {
+            for (int i = 0; i < 5; i++) {
+                while (letter != 'b') {
+                    try {
+                        System.out.println("Вызван метод wait  в потоке b");
+                        mon.wait();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+                System.out.println(letter);
+                letter = 'c';
+                mon.notify();
+            }
+        }
+    }
+
+    public void printLetterC(Object mon) {
+        System.out.println("Запущен поток печати буквы c");
+        synchronized (mon) {
+            for (int i = 0; i < 5; i++) {
+                while (letter != 'c') {
+                    try {
+                        System.out.println("Вызван метод wait  в потоке c");
+                        mon.wait();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+                System.out.println(letter);
+                letter = 'a';
+                mon.notify();
             }
         }
     }
