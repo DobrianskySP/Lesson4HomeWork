@@ -1,6 +1,6 @@
 public class MyThread extends Thread {
-    char letter = 'a';
-
+    static char letter = 'a';
+    static Object mon = new Object();
 
     public MyThread(String name) {
         System.out.println("Поток с именем " + name);
@@ -9,13 +9,12 @@ public class MyThread extends Thread {
 
     @Override
     public void run() {
-        Object mon = new Object();
-        printLetterA(mon);
-        printLetterB(mon);
-        printLetterC(mon);
+        printLetterA();
+        printLetterB();
+        printLetterC();
     }
 
-    public void printLetterA(Object mon) {
+    public void printLetterA() {
         System.out.println("Запущен поток печати буквы а");
         synchronized (mon) {
             for (int i = 0; i < 5; i++) {
@@ -29,13 +28,13 @@ public class MyThread extends Thread {
                 }
                     System.out.println(letter);
                     letter = 'b';
-                    mon.notify();
+                    mon.notifyAll();
             }
             System.out.println("+");
         }
     }
 
-    public void printLetterB(Object mon) {
+    public void printLetterB() {
         System.out.println("Запущен поток печати буквы b");
         synchronized (mon) {
             for (int i = 0; i < 5; i++) {
@@ -49,12 +48,12 @@ public class MyThread extends Thread {
                 }
                 System.out.println(letter);
                 letter = 'c';
-                mon.notify();
+                mon.notifyAll();
             }
         }
     }
 
-    public void printLetterC(Object mon) {
+    public void printLetterC() {
         System.out.println("Запущен поток печати буквы c");
         synchronized (mon) {
             for (int i = 0; i < 5; i++) {
@@ -68,7 +67,7 @@ public class MyThread extends Thread {
                 }
                 System.out.println(letter);
                 letter = 'a';
-                mon.notify();
+                mon.notifyAll();
             }
         }
     }
